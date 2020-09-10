@@ -200,5 +200,30 @@ def fix_marks(schoolkid):
     for bad_mark in bad_marks:
         bad_mark.points = random.randint(4, 5)
         bad_mark.save()
-        print(bad_mark)
 
+
+def fix_last_mark(schoolkid):
+    kid = Schoolkid.objects.filter(full_name__contains=schoolkid)[0]
+    bad_mark = Mark.objects.filter(schoolkid=kid, points__in=[2, 3]).reverse()[0]
+    bad_mark.points = random.randint(4, 5)
+    bad_mark.save()
+
+
+def remove_chastisements(schoolkid):
+    kid = Schoolkid.objects.get(full_name__contains=schoolkid)
+    Chastisement.objects.filter(schoolkid=kid).delete()
+
+
+def create_commendation(schoolkid, lesson, year):
+    best_commendations = ['Молодец!', 'Отлично!', 'Хорошо!', 'Гораздо лучше, чем я ожидал!', 'Ты меня приятно удивил!',
+                          'Великолепно!', 'Прекрасно!', 'Ты меня очень обрадовал!',
+                          'Именно этого я давно ждал от тебя!',
+                          'Сказано здорово – просто и ясно!', 'Ты, как всегда, точен!', 'Очень хороший ответ!',
+                          'Талантливо!', 'Ты сегодня прыгнул выше головы!', 'Я поражен!', 'Уже существенно лучше!',
+                          'Потрясающе!', 'Замечательно!', 'Прекрасное начало!', 'Так держать!', 'Ты на верном пути!',
+                          'Здорово!', 'Это как раз то, что нужно!', 'Я тобой горжусь!',
+                          'С каждым разом у тебя получается всё лучше!', 'Мы с тобой не зря поработали!']
+    kid = Schoolkid.objects.get(full_name__contains=schoolkid)
+    last_lesson = Lesson.objects.filter(subject__title=lesson, subject__year_of_study=year).reverse()[0]
+    Commendation.objects.create(text=random.choice(best_commendations), created=last_lesson.date, schoolkid=kid,
+                                subject=last_lesson.subject, teacher=last_lesson.teacher)
