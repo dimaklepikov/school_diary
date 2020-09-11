@@ -210,8 +210,11 @@ def fix_last_mark(schoolkid):
 
 
 def remove_chastisements(schoolkid):
-    kid = Schoolkid.objects.get(full_name__contains=schoolkid)
-    Chastisement.objects.filter(schoolkid=kid).delete()
+    try:
+        kid = Schoolkid.objects.get(full_name__contains=schoolkid)
+        Chastisement.objects.filter(schoolkid=kid).delete()
+    except Schoolkid.DoesNotExist:
+        print("Такого ученика не существует")
 
 
 def create_commendation(schoolkid, lesson, year):
